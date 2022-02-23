@@ -24,6 +24,7 @@
     "moment-timezone": "^0.5.31",
     "mysql2": "^2.1.0",
     "node-cleanup": "^2.1.2",
+    "nodemailer": "^6.7.2",
     "nodemon": "^2.0.4",
     "public-ip": "^4.0.2",
     "uuid": "^8.3.0",
