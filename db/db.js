@@ -1,16 +1,16 @@
 var mysql = require('mysql2');
-var config = require('../config');
+var config = require('../config/index');
 
 var state = {
   pool: null,
   mode: null,
 }
 
-var ENVIRONMENT = config.ENVIRONMENT;
-var DB_HOST = config.DB_HOST;
-var DB_USER = config.DB_USER;
-var DB_PASSWORD = config.DB_PASSWORD;
-var DEVELOPMENT_DB = config.DEVELOPMENT_DB;
+var ENVIRONMENT = config.general.environment;
+var DB_HOST = config.database.host;
+var DB_USER = config.database.user;
+var DB_PASSWORD = config.database.password;
+var DEVELOPMENT_DB = config.database.db;
 
 exports.connect = function(done) {
   state.pool = mysql.createPool({

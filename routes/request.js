@@ -1,5 +1,6 @@
 var express = require("express");
 var requestModel = require("../models/request.js");
+var mailModel = require("../models/mail");
 var { check, validationResult } = require("express-validator");
 var { matchedData } = require("express-validator");
 const { v4: uuidv4 } = require("uuid");
@@ -236,7 +237,7 @@ router.patch("/status", async (req, res) => {
   }
 });
 
-router.post("/dependencies", async (req, res) => {
+router.post("/dependencies/update", async (req, res) => {
   try {
     res.setHeader("Content-Type", "application/json");
     log.logger.info(
@@ -249,6 +250,7 @@ router.post("/dependencies", async (req, res) => {
       req.body.id,
       req.body.dependencie
     );
+    await mailModel.emailAssignRegister();
     if (!result)
       return res.status(500).send(
         JSON.stringify(
@@ -260,6 +262,7 @@ router.post("/dependencies", async (req, res) => {
           3
         )
       );
+    
 
     return res
       .status(200)
@@ -351,6 +354,7 @@ router.post("/post", async (req, res) => {
       req.body.Status,
       req.body.Neighborhood
     );
+    await mailModel.emailRequestRegister(req.body);
     if (!RequestId)
       return res.status(500).send(
         JSON.stringify(

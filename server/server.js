@@ -40,7 +40,6 @@ app.use('/user', require('../routes/users.js'));
 app.use('/login', require('../routes/login.js'));
 app.use('/request', require('../routes/request.js'));
 app.use('/dependencies', require('../routes/dependencies.js'));
-app.use('/mail', require('../routes/mail.js'));
 
 //Base routes
 app.get('/', (req, res) => {

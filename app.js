@@ -4,10 +4,10 @@ var http = require('http');
 var publicIp = require('public-ip');
 var nodeCleanup = require('node-cleanup');
 var log = require('./services/apilogger');
-var config = require('./config');
+var config = require('./config/index');
 
 //Get port from environment and store in Express.
-var APP_PORT = config.APP_PORT ;
+var APP_PORT = config.general.port;
 
 //Get IP
 // publicIp.v4().then(ip => {
