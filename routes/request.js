@@ -8,9 +8,17 @@ var jwt = require("../services/jwt");
 var capitalize = require("capitalize");
 var log = require("../services/apilogger");
 var permission = require("../services/permission");
+var fs = require("fs");
+var formidable = require("formidable");
 var awsPromises = require("../services/aws-promises");
 var config = require("../config");
+var multer = require("multer");
 const { S3_PRIVATE_BUCKET } = require("../config");
+var path = require("path");
+const { promisify } = require("util");
+const { pipeline } = promisify(require("stream").pipeline);
+
+var upload = multer();
 
 var router = express.Router();
 
@@ -262,7 +270,6 @@ router.post("/dependencies/update", async (req, res) => {
           3
         )
       );
-    
 
     return res
       .status(200)
@@ -355,6 +362,21 @@ router.post("/post", async (req, res) => {
       req.body.Neighborhood
     );
     await mailModel.emailRequestRegister(req.body);
+    if (!mailModel)
+    return res.status(500).send(
+      JSON.stringify(
+        {
+          success: false,
+          error: {
+            code: 301,
+            message: "Error in database",
+            details: mailModel,
+          },
+        },
+        null,
+        3
+      )
+    );
     if (!RequestId)
       return res.status(500).send(
         JSON.stringify(
@@ -380,6 +402,73 @@ router.post("/post", async (req, res) => {
           3
         )
       );
+  } catch (err) {
+    log.logger.error(
+      `{"verb":"${req.method}", "path":"${
+        req.baseUrl + req.path
+      }", "params":"${JSON.stringify(req.params)}", "query":"${JSON.stringify(
+        req.query
+      )}", "body":"${JSON.stringify(req.body)}", "error":"${err}"}`
+    );
+    return res.status(500).send(
+      JSON.stringify(
+        {
+          success: false,
+          error: {
+            code: 301,
+            message: "Error in service or database",
+            details: err,
+          },
+        },
+        null,
+        3
+      )
+    );
+  }
+});
+
+router.post("/uploads", upload.single("file"), async (req, res) => {
+  const { file } = req;
+  try {
+    res.setHeader("Content-Type", "application/json");
+    log.logger.info(
+      `{"verb":"${req.method}", "path":"${
+        req.baseUrl + req.path
+      }", "body":"${JSON.stringify(req.body)}"}`
+    );
+
+    //Handle validation errors
+    var errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(400).send(
+        JSON.stringify(
+          {
+            success: false,
+            error: {
+              code: 201,
+              message: "Request has invalid data",
+              details: errors.mapped(),
+            },
+          },
+          null,
+          3
+        )
+      );
+
+    // const extname = path.extname(file.originalname);
+
+    const fileName = req.body.name + "-" + file.originalname.replace(" ", "-");
+    console.log(req.body.name);
+
+    await fs.createWriteStream(`${__dirname}/../public/uploads/${fileName}`);
+
+    const [result] = await requestModel.savefile(
+      fileName,
+      req.body.request_id
+    );
+    return res
+      .status(200)
+      .send(JSON.stringify({ success: true, data: result }, null, 3));
   } catch (err) {
     log.logger.error(
       `{"verb":"${req.method}", "path":"${

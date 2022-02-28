@@ -33,6 +33,13 @@ exports.updateDependencies = async (Id, Dependencie) => {
   return promisePool.query("CALL Update_requestDependencies(?,?)", values);
 };
 
+exports.savefile = async (fileName, request_id) => {
+  var values = [fileName, request_id];
+  // query database using promises
+  const promisePool = db.get().promise();
+  return promisePool.query("CALL Post_requestFiles(?,?)", values);
+};
+
 exports.post = async (
   RequestType,
   Anonymous,

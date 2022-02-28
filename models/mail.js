@@ -60,7 +60,7 @@ exports.emailRequestRegister = async (data) => {
         to: params.REQUEST_EMAIL,
         subject: "Secretaria cucuta | Solicitud",
         html,
-        attachments: generatedPdfAttachments,
+        // attachments: generatedPdfAttachments,
       };
   
       transporter.sendMail(emailOptions, (err, info) => {

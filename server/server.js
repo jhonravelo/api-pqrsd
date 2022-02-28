@@ -2,6 +2,7 @@ var express = require('express');
 var bodyParser = require('body-parser');
 var compression = require('compression');
 var helmet = require('helmet');
+var path = require('path');
 var cors = require('cors');
 // var basicAuth = require('../services/basicAuth');
 // var config = require('../config');
@@ -18,6 +19,7 @@ app.use(bodyParser.urlencoded({
   extended: false
 }));
 app.use(bodyParser.json({type: ['json', 'text']}));
+app.use(express.static(path.join(__dirname, 'public')));
 
 //Compress application responses
 app.use(compression());
